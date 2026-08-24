@@ -1,0 +1,27 @@
+PODS:
+  - fishhook (0.2)
+  - TrampolineBlockHook (0.1.0):
+    - fishhook
+
+DEPENDENCIES:
+  - fishhook (from `https://github.com/facebook/fishhook.git`)
+  - TrampolineBlockHook (from `../`)
+
+EXTERNAL SOURCES:
+  fishhook:
+    :git: https://github.com/facebook/fishhook.git
+  TrampolineBlockHook:
+    :path: "../"
+
+CHECKOUT OPTIONS:
+  fishhook:
+    :commit: aadc161ac3b80db07a9908851839a17ba63a9eb1
+    :git: https://github.com/facebook/fishhook.git
+
+SPEC CHECKSUMS:
+  fishhook: ea19933abfe8f2f52c55fd8b6e2718467d3ebc89
+  TrampolineBlockHook: d351e5ebc2d563e047fcfbf4359b16021de41eae
+
+PODFILE CHECKSUM: 55032beb6896295fa86b0fadbdda191e52792e00
+
+COCOAPODS: 1.11.3
