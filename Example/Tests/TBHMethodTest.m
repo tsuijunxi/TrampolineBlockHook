@@ -87,14 +87,6 @@
     NSAssert(ret == YES, @"");
 }
 
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
-}
-
 - (MyObject *)new_returnObject {
     MyObject *obj = [MyObject new];
     obj.name = @"replaced";

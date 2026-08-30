@@ -15,11 +15,9 @@
 #import <TrampolineBlockHook/block_hook_private.h>
 #import "test.h"
 #import <dlfcn.h>
-#import <fishhook/fishhook.h>
 
 static void pre(void *block) {
     printf("pre hook\n");
-    struct Block_layout *layout = (struct Block_layout *)block;
     Dl_info dlinfo;
     memset(&dlinfo, 0, sizeof(dlinfo));
 //    if (dladdr(layout->descriptor->reserved, &dlinfo)) {
@@ -34,14 +32,6 @@ static void after(void *block) {
 int add(int a, int b)
 {
     return a + b;
-}
-
-static void OriginFunction(void) {
-    printf("OriginFunction\n");
-}
-
-static void ReplacedFunction(void) {
-    printf("OriginFunction\n");
 }
 
 typedef struct Student {
@@ -106,7 +96,7 @@ Student testStruct() {
     Block(self);
 
     unhook_block((__bridge void *)(Block));
-    struct Student student = Block(self);
+    Block(self);
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {

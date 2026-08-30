@@ -10,6 +10,8 @@
 #include "trampoline_table.h"
 #include "hash_map.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <Block.h>
 #include <dlfcn.h>
 
@@ -37,44 +39,68 @@ static trampoline_table *blockimp_table_stret = NULL;
 static map_t global_map = NULL;
 
 void set_dlinfo(void *block) {
+    if (!block) {
+        return;
+    }
     if (!global_map) {
         global_map = hashmap_new();
     }
+    if (!global_map) {
+        return;
+    }
     Dl_info *dlinfo = (Dl_info *)malloc(sizeof(Dl_info));
-    memset(dlinfo, 0, sizeof(&dlinfo));
+    if (!dlinfo) {
+        return;
+    }
+    memset(dlinfo, 0, sizeof(*dlinfo));
     struct Block_layout *layout = (struct Block_layout *)block;
     if (dladdr(layout->invoke, dlinfo)) {
         hashmap_put(global_map, block, (void *)dlinfo);
+    } else {
+        free(dlinfo);
     }
 }
 
 void *get_dlinfo(void *block) {
-    Dl_info *dlinfo;
+    if (!global_map || !block) {
+        return NULL;
+    }
+    Dl_info *dlinfo = NULL;
     hashmap_get(global_map, block, &dlinfo);
     return dlinfo;
 }
 
 
 BOOL hook_block_with_stub(void *block, void *replacement, void *pre, void *after) {
+    if (!block || !replacement) {
+        return NO;
+    }
     set_dlinfo(block);
-    void *ret = get_dlinfo(block);
-    trampoline *tramp;
     struct Block_layout *bl = (struct Block_layout *)block;
+    struct Block_layout *layoutReplaced = (struct Block_layout *)replacement;
+    if (!bl->invoke || !bl->descriptor || !layoutReplaced->invoke) {
+        return NO;
+    }
+    trampoline *tramp = NULL;
     if (bl->flags & BLOCK_USE_STRET) {
         tramp = trampoline_alloc(&STRET_TABLE_CONFIG, &STRET_TABLE);
     } else {
         tramp = trampoline_alloc(&blockimp_table_page_config, &blockimp_table);
     }
-    struct Block_layout *layout = (struct Block_layout*)block;
-    struct Block_layout *layoutReplaced = (struct Block_layout*)replacement;
+    if (!tramp || !tramp->trampoline) {
+        return NO;
+    }
     void **config = (void **)trampoline_data_ptr(tramp->trampoline);
+    if (!config) {
+        return NO;
+    }
     config[0] = replacement;
     config[1] = tramp;
     config[2] = layoutReplaced->invoke;
     config[3] = pre;
     config[4] = after;
-//    layout->descriptor->reserved = (unsigned long)layout->invoke;
-    layout->invoke = (void (*)(void *, ...))tramp->trampoline;
+    bl->descriptor->reserved = (unsigned long)bl->invoke;
+    bl->invoke = (void (*)(void *, ...))tramp->trampoline;
     
     
     return YES;
@@ -85,13 +111,22 @@ BOOL hook_block(void *block, void *replacement) {
 }
 
 BOOL unhook_block(void *block) {
-    struct Block_layout *layout = (struct Block_layout*)block;
+    if (!block) {
+        return NO;
+    }
+    struct Block_layout *layout = (struct Block_layout *)block;
+    if (!layout->invoke || !layout->descriptor || layout->descriptor->reserved == 0) {
+        return NO;
+    }
     void **config = trampoline_data_ptr(layout->invoke);
     if (!config) {
         return NO;
     }
-    struct Block_layout *bl = config[0];
-    trampoline *tramp = config[1];
+    struct Block_layout *bl = (struct Block_layout *)config[0];
+    trampoline *tramp = (trampoline *)config[1];
+    if (!bl || !tramp) {
+        return NO;
+    }
     layout->invoke = (void (*)(void *, ...))layout->descriptor->reserved;
     layout->descriptor->reserved = 0;
     if (bl->flags & BLOCK_USE_STRET) {
@@ -101,4 +136,3 @@ BOOL unhook_block(void *block) {
     }
     return YES;
 }
-

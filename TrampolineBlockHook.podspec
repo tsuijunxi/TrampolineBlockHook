@@ -9,35 +9,22 @@
 Pod::Spec.new do |s|
   s.name             = 'TrampolineBlockHook'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of TrampolineBlockHook.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+  s.summary          = 'A trampoline-based Objective-C block and method hook library.'
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+TrampolineBlockHook provides low-level trampoline hooks for Objective-C block
+invocations and instance method implementations. It supports optional pre-hook
+and post-hook callbacks, and is intended for runtime research, debugging,
+instrumentation, and mixed Objective-C/Swift projects that expose Objective-C
+runtime entry points.
                        DESC
 
   s.homepage         = 'https://github.com/tsuijunxi/TrampolineBlockHook'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'tsuijunxi' => '598395670@qq.com' }
   s.source           = { :git => 'https://github.com/tsuijunxi/TrampolineBlockHook.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '13.0'
 
   s.source_files = 'TrampolineBlockHook/Classes/**/*'
-  s.dependency 'fishhook'
-  
-  # s.resource_bundles = {
-  #   'TrampolineBlockHook' => ['TrampolineBlockHook/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end

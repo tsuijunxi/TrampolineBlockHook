@@ -10,11 +10,11 @@
 #include <stdio.h>
 
 void pre(void *p1) {
-    printf("before hook: %d\n, p1");
+    printf("before hook: %p\n", p1);
 }
 
 void after(void *p1) {
-    printf("after hook: %d\n, p1");
+    printf("after hook: %p\n", p1);
 }
 
 void preMethodStub(id obj, SEL sel) {

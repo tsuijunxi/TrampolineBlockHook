@@ -42,7 +42,6 @@
             MyObject *obj = [MyObject new];
             obj.name = @"replaced";
             return obj;
-            return nil;
         };
 
         hook_block_with_stub((__bridge void *)(Block), (__bridge void *)(ReplacedBlock), pre, after);
@@ -180,14 +179,6 @@
     unhook_block((__bridge void *)(Block));
     student = Block(self);
     NSAssert(student.height == 5, @"");
-}
-
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
 }
 
 @end
